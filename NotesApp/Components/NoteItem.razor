@@ -1,0 +1,61 @@
+@using NotesApp.Data
+@inject INoteService NoteService
+
+@if (isEditing)
+{
+    <EditForm Model="editNote" OnValidSubmit="SaveEdit">
+        <InputText class="form-control mb-1" @bind-Value="editNote.Title" />
+        <InputTextArea class="form-control mb-1" @bind-Value="editNote.Content" />
+        <button class="btn btn-success btn-sm me-1" type="submit">Save</button>
+        <button class="btn btn-secondary btn-sm" @onclick="CancelEdit">Cancel</button>
+    </EditForm>
+}
+else
+{
+    <div>
+        <strong>@Note.Title</strong>
+        <div>@Note.Content</div>
+        <small class="text-muted">@Note.CreatedAt.ToLocalTime().ToString("g")</small>
+        <div>
+            <button class="btn btn-link btn-sm" @onclick="Edit">Edit</button>
+            <button class="btn btn-link btn-sm text-danger" @onclick="Delete">Delete</button>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public Note Note { get; set; } = default!;
+    [Parameter] public EventCallback OnNoteUpdated { get; set; }
+    [Parameter] public EventCallback OnNoteDeleted { get; set; }
+
+    private bool isEditing = false;
+    private Note editNote = new();
+
+    private void Edit()
+    {
+        isEditing = true;
+        editNote = new Note
+        {
+            Id = Note.Id,
+            Title = Note.Title,
+            Content = Note.Content,
+            CreatedAt = Note.CreatedAt,
+            UpdatedAt = Note.UpdatedAt
+        };
+    }
+
+    private void CancelEdit() => isEditing = false;
+
+    private async Task SaveEdit()
+    {
+        await NoteService.SaveNoteAsync(editNote);
+        isEditing = false;
+        await OnNoteUpdated.InvokeAsync();
+    }
+
+    private async Task Delete()
+    {
+        await NoteService.DeleteNoteAsync(Note.Id);
+        await OnNoteDeleted.InvokeAsync();
+    }
+}

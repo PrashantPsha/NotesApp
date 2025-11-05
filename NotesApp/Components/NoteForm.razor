@@ -1,0 +1,27 @@
+@using NotesApp.Data
+@inject INoteService NoteService
+
+<EditForm Model="note" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="mb-2">
+        <InputText class="form-control" @bind-Value="note.Title" placeholder="Title" />
+    </div>
+    <div class="mb-2">
+        <InputTextArea class="form-control" @bind-Value="note.Content" placeholder="Content" />
+    </div>
+    <button class="btn btn-primary" type="submit">Add Note</button>
+</EditForm>
+
+@code {
+    private Note note = new();
+
+    [Parameter] public EventCallback OnNoteAdded { get; set; }
+
+    private async Task HandleValidSubmit()
+    {
+        await NoteService.SaveNoteAsync(note);
+        note = new();
+        await OnNoteAdded.InvokeAsync();
+    }
+}

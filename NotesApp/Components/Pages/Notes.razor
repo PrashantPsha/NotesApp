@@ -1,0 +1,40 @@
+@page "/notes"
+@inject INoteService NoteService
+
+<h3>Notes</h3>
+<NoteForm OnNoteAdded="LoadNotes" />
+
+@if (notes == null)
+{
+    <p>Loading...</p>
+}
+else if (!notes.Any())
+{
+    <p>No notes yet.</p>
+}
+else
+{
+    <ul class="list-group">
+        @foreach (var note in notes)
+        {
+            <li class="list-group-item mb-2">
+                <NoteItem Note="note" OnNoteUpdated="LoadNotes" OnNoteDeleted="LoadNotes" />
+            </li>
+        }
+    </ul>
+}
+
+@code {
+    private List<Note>? notes;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadNotes();
+    }
+
+    private async Task LoadNotes()
+    {
+        notes = await NoteService.GetNotesAsync();
+        StateHasChanged();
+    }
+}
