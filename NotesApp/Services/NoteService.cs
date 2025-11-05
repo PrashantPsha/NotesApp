@@ -3,7 +3,6 @@ using NotesApp.Data;
 
 namespace NotesApp.Services
 {
-    // Ensure NoteService implements INoteService
     public class NoteService : INoteService
     {
         private readonly NotesDbContext _context;
