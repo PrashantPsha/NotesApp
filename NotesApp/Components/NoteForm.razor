@@ -15,8 +15,7 @@
     private Note note = new();
 
     [Parameter] public EventCallback<Note> OnNoteAdded { get; set; }
-    // [Parameter] public EventCallback OnNoteAdded { get; set; }
-
+    
     private async Task HandleSubmit()
     {
         await NoteService.SaveNoteAsync(note);
