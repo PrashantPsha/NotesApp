@@ -1,9 +1,7 @@
 @using NotesApp.Data
 @inject INoteService NoteService
 
-<EditForm Model="note" OnValidSubmit="HandleValidSubmit">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+<EditForm Model="note" OnValidSubmit="HandleSubmit" FormName="NoteForm">
     <div class="mb-2">
         <InputText class="form-control" @bind-Value="note.Title" placeholder="Title" />
     </div>
@@ -16,12 +14,13 @@
 @code {
     private Note note = new();
 
-    [Parameter] public EventCallback OnNoteAdded { get; set; }
+    [Parameter] public EventCallback<Note> OnNoteAdded { get; set; }
+    // [Parameter] public EventCallback OnNoteAdded { get; set; }
 
-    private async Task HandleValidSubmit()
+    private async Task HandleSubmit()
     {
         await NoteService.SaveNoteAsync(note);
+        await OnNoteAdded.InvokeAsync(note);
         note = new();
-        await OnNoteAdded.InvokeAsync();
     }
 }

@@ -25,11 +25,12 @@ namespace NotesApp.Services
         {
             if (_context.Notes.Any(n => n.Id == note.Id))
             {
-                note.UpdatedAt = DateTime.UtcNow;
+                note.UpdatedAt = DateTime.Now;
                 _context.Notes.Update(note);
             }
             else
             {
+                note.CreatedAt = DateTime.Now;
                 _context.Notes.Add(note);
             }
             await _context.SaveChangesAsync();
